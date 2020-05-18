@@ -1,0 +1,65 @@
+面试题20. 表示数值的字符串
+请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。
+例如，字符串"+100"、"5e2"、"-123"、"3.1416"、"0123"都表示数值，但"12e"、"1a3.14"、"1.2.3"、"+-5"、"-1E-16"及"12e+5.4"都不是。
+
+//判断.后面和e|E后面是否为数字，一直判断，直到不是数字为止或者到达末尾
+bool isnum(string &s,int &i)
+{
+	int temp=i;//用来判断i是否判断成功
+	while(i<s.size() && s[i]>='0' && s[i]<='9')
+	{
+		i++;
+	}
+	if(i>temp)//表示s[i]符合要求，或者小数点后无数据也正确
+	{
+		return true;
+	}
+	return false;
+}
+//判断整数部分是否为+-0~9,
+bool isstart(string &s,int &i)
+{
+	if(i<s.size() && s[i]=='+' || s[i]=='-')//碰到+-跳过即可
+		i++;
+	return isnum(s,i);//判断数字即可	
+}
+bool isNumber(string s) 
+{
+	if(s.empty())
+		return false;
+	int i=0;
+	//开头不能有空格
+	while(s[i]==' ') ++i;
+
+	//判断开头整数，是否为+，-，0~9
+	bool flag=isstart(s,i);
+
+	//判断是否出现小数点，表示小数来了，判断小数点后面的数据是否为数字
+	if(i<s.size() && s[i]=='.')
+	{
+		i++;//跳过小数点
+		flag= isnum(s,i) || flag;//这个不用&&，因为可以不存在整数，直接小数点，调用判断数字函数
+	}
+
+	//存在指数,后面数据必须全为数字
+	if(s[i]=='e'||s[i]=='E')
+	{
+		i++;
+		//指数后面可以跟+-符号，所以调用可以判断符号和数字的
+		flag=flag && isstart(s,i);//一定要&&得到结果
+	}
+	//去除结尾空格
+	while(s[i]==' ')
+		i++;
+	if(!flag || i!=s.size())
+	{
+		return false;
+	}
+	return true;   
+}
+int main()
+{
+	string s;
+	cin>>s;
+	cout<<isNumber(s); 
+}
